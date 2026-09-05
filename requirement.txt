@@ -1,2 +1,12 @@
-pip install langchain langchain-openai langchain-google-genai langchain-groq langchain-community
-pip install python-dotenv pypdf
+flask
+ipython
+jupyter
+langchain
+langchain-community
+langchain-openai
+langgraph
+langsmith
+pydantic
+python-dotenv
+tavily-python
+dspy-ai
