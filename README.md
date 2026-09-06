@@ -20,26 +20,29 @@ contains an example project produced by the workflow.
 
 ```mermaid
 flowchart LR
-    A[Project request] --> B[Architecture and task planner]
-    B --> C[LangGraph task loop]
-    C --> D[DSPy code generator]
-    D --> E[Quality review and feedback]
-    E -->|Needs improvement| D
-    E -->|Accepted| F[Write file under agent/]
+    A[Project request] --> B[Create JSON plan]
+    B --> C[Redirect to next unfinished task]
+    C -->|Tasks remain| D[Generate target file with DSPy]
+    D --> E[Score code and produce feedback]
+    E -->|Score < 0.8 and attempts remain| D
+    E -->|Score ≥ 0.8 or five attempts used| F[Write file with ShellTool]
     F --> C
+    C -->|All tasks complete| G[Workflow result]
 
-    D -. LLM request .-> G[OpenAI-compatible LLM endpoint]
-    E -. LLM request .-> G
-    G --> H[Configured model provider]
+    B -. LangChain request .-> H[OpenAI-compatible endpoint]
+    D -. DSPy request .-> H
+    E -. DSPy request .-> H
+    H --> I[Configured model provider]
 ```
+
 
 The workflow:
 
 1. Converts the request into a JSON architecture and dependency-aware task list.
 2. Selects the next unfinished task.
 3. Generates code for that task's target file.
-4. Reviews the output and retries with feedback up to five times.
-5. Writes the accepted code under `agent/` and continues until all tasks finish.
+4. Reviews the output and makes up to five total generation attempts, carrying the latest feedback into the next attempt.
+5. Writes the final attempt under `agent/` and continues until all tasks finish.
 
 ## Features
 
@@ -48,7 +51,6 @@ The workflow:
 - Iterative code review with quality feedback
 - LangGraph state-based orchestration
 - OpenAI-compatible model integration through LangChain and DSPy
-- Optional weighted provider fallback through `main.py`
 
 ## Requirements
 
@@ -122,7 +124,7 @@ The repository currently includes a Flask prime-number checker:
 python agent/app.py
 ```
 
-Open <http://127.0.0.1:5000> in a browser.``
+Open <http://127.0.0.1:5000> in a browser.
 
 ## Project structure
 
